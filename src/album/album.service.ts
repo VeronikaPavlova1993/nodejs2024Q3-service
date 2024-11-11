@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAlbumDto } from './dto/createAlbum.dto';
 import { UpdateAlbumDto } from './dto/updateAlbum.dto';
 import { Album as IAlbum } from 'types';
@@ -34,7 +39,7 @@ export class AlbumService {
   getAllAlbums(): IAlbum[] {
     return this.db.albums;
   }
-getOneAlbum(id: string): IAlbum {
+  getOneAlbum(id: string): IAlbum {
     const album = this.db.albums.find((entity) => entity.id === id);
     if (!album) throw new NotFoundException(`Album with id: ${id} not found`);
     return album;
@@ -68,6 +73,12 @@ getOneAlbum(id: string): IAlbum {
     }
     const deleted = this.db.albums[albumIndex];
     this.db.albums.splice(albumIndex, 1);
+    this.db.tracks
+      .filter((entity) => (entity.albumId = id))
+      .forEach((item) => (item.albumId = null));
+
+    const albumFavsIndex = this.db.favs.albums.indexOf(id);
+    if (albumFavsIndex !== -1) this.db.favs.albums.splice(albumFavsIndex, 1);
     return deleted;
   }
 }

@@ -1,13 +1,13 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArtistDto } from './dto/createArtist.dto';
 import { UpdateArtistDto } from './dto/updateArtist.dto';
-import { db } from 'src/db/db';
+import { db as DB } from 'src/db/db';
 import { Artist } from './artist.model';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class ArtistsService {
-  constructor(@Inject(db) private readonly db: db) {}
+  constructor(@Inject(DB) private readonly db: DB) {}
   createArtist({ name, grammy }: CreateArtistDto): Artist {
     const newArtist = new Artist({
       id: uuid(),
@@ -42,6 +42,14 @@ export class ArtistsService {
     }
     const deleted = this.db.artists[artistIndex];
     this.db.artists.splice(artistIndex, 1);
+
+    this.db.tracks
+      .filter((entity) => (entity.artistId = id))
+      .forEach((item) => (item.artistId = null));
+
+    const artistFavsIndex = this.db.favs.artists.indexOf(id);
+    if (artistFavsIndex !== -1) this.db.favs.albums.splice(artistFavsIndex, 1);
+
     return deleted;
   }
 }
