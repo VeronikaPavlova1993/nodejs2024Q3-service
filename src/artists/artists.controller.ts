@@ -17,14 +17,14 @@ export class ArtistsController {
   }
   @Get(':id')
   getOneArtist(@Param('id') id: string) {
-    return this.artistService.getOneArtist(Number(id));
+    return this.artistService.getOneArtist(id);
   }
   @Patch(':id')
   updateArtist(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto) {
-    return this.artistService.updateArtist(Number(id), updateArtistDto);
+    return this.artistService.updateArtist(id, updateArtistDto);
   }
   @Delete(':id')
   removeArtist(@Param('id') id: string) {
-    return this.artistService.removeArtist(Number(id));
+    return this.artistService.removeArtist(id);
   }
 }
